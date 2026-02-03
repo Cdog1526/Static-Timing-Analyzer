@@ -5,6 +5,12 @@
 #include <list>
 #include <unordered_map>
 
+enum class TimingNodeType {
+    COMBINATIONAL,
+    FF_LAUNCH,
+    FF_CAPTURE
+};
+
 struct TimingEdge;
 
 struct TimingNode {
@@ -12,7 +18,9 @@ struct TimingNode {
 
     double arrival_time = 0.0;
     double required_time = 0.0;
-
+    double setup_time = 0.0;
+    TimingNode* worst_parent = nullptr;
+    TimingNodeType type = TimingNodeType::COMBINATIONAL;
     std::vector<TimingEdge*> out_edges;
     std::vector<TimingEdge*> in_edges;
 };
@@ -31,8 +39,14 @@ public:
                   double delay);
 
     void dump() const;
+    std::vector<TimingNode*> topo_order();
+    double propagate_arrival_times();
+    double propagate_required_times();
+    void compute_slack();
 
 private:
     std::unordered_map<std::string, TimingNode> nodes_;
     std::list<TimingEdge> edges_;
+    std::vector<TimingNode*> topo_order_cache_;
+    double clock_period_ = 10.0; // Default clock period
 };

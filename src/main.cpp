@@ -11,6 +11,9 @@ int main() {
     graph.add_edge("A", "C", 2.5);
 
     graph.dump();
+    double max_arrival_time = graph.propagate_arrival_times();
+    graph.propagate_required_times();
+    graph.compute_slack();
 
     std::vector<std::thread> workers;
     for (int i = 0; i < 4; i++) {
