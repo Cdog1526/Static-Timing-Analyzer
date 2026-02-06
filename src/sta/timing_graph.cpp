@@ -21,6 +21,14 @@ void TimingGraph::add_edge(const std::string& src,
     dst_node->in_edges.push_back(&edges_.back());
 }
 
+TimingNode* TimingGraph::get_node(const std::string& name) {
+    auto it = nodes_.find(name);
+    if(it != nodes_.end()) {
+        return &it->second;
+    }
+    return nullptr;
+}
+
 void TimingGraph::dump() const {
     for (const auto& [name, node] : nodes_) {
         std::cout << "Node " << name << " -> ";
@@ -70,7 +78,7 @@ double TimingGraph::propagate_arrival_times() {
     double max_arrival_time = 0.0;
     for(auto* node : topo_order_cache_) {
         if(node->type==TimingNodeType::FF_LAUNCH) {
-            node->arrival_time = 0.0;
+            node->arrival_time = node->clk_to_q;
             continue;
         }
         for(auto* edge : node->in_edges) {
