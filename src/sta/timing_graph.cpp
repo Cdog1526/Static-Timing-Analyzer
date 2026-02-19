@@ -81,6 +81,10 @@ double TimingGraph::propagate_arrival_times() {
             node->arrival_time = node->clk_to_q;
             continue;
         }
+        if (node->type == TimingNodeType::PRIMARY_INPUT) {
+            node->arrival_time = 0.0;
+            continue;
+        }
         for(auto* edge : node->in_edges) {
             double arrival_time = edge->src->arrival_time + edge->delay;
             if(arrival_time > node->arrival_time) {
@@ -105,11 +109,15 @@ double TimingGraph::propagate_required_times() {
     }
     for(auto it = topo_order_cache_.rbegin(); it != topo_order_cache_.rend(); ++it) {
         TimingNode* node = *it;
+        if(node->type==TimingNodeType::FF_CAPTURE) {
+            node->required_time = clock_period_ - node->setup_time;
+            continue;
+        }
+        if(node->type == TimingNodeType::FF_LAUNCH) {
+            continue;
+        }
         for(auto* edge : node->out_edges) {
-            if(node->type==TimingNodeType::FF_CAPTURE) {
-                node->required_time = clock_period_ = node->setup_time;
-                continue;
-            }
+            
             double required_time = edge->dst->required_time - edge->delay;
             if(required_time < node->required_time) {
                 node->required_time = required_time;

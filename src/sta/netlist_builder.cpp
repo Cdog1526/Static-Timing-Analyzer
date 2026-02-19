@@ -10,8 +10,10 @@ struct NetListBuilder {
         for (const auto& port : module.ports) {
             TimingNode* node = graph.add_node(port.name);
             if(port.direction == PortDirection::INPUT) {
+                niode->type = TimingNodeType::PRIMARY_INPUT;
                 graph.inputs.push_back(node);
             } else {
+                node->type = TimingNodeType::PRIMARY_OUTPUT;
                 graph.outputs.push_back(node);
             }
         }

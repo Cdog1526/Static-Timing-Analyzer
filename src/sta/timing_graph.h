@@ -8,7 +8,9 @@
 enum class TimingNodeType {
     COMBINATIONAL,
     FF_LAUNCH,
-    FF_CAPTURE
+    FF_CAPTURE,
+    PRIMARY_INPUT,
+    PRIMARY_OUTPUT
 };
 
 struct TimingEdge;
